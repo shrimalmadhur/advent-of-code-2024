@@ -9,7 +9,6 @@ fn main() {
 }
 
 fn day1() {
-    // File hosts.txt must exist in the current path
     let mut vec1: Vec<i32> = Vec::new();
     let mut vec2: Vec<i32> = Vec::new();
     let mut map: HashMap<i32, i32> = HashMap::new();
