@@ -6,23 +6,53 @@ use std::path::Path;
 pub fn day2() {
     let pattern = Regex::new(r"\s+").unwrap();
     let mut counter: i32 = 0;
+    let mut part2_count: i32 = 0;
     if let Ok(lines) = read_lines("./src/inputs/day2.txt") {
         // Consumes the iterator, returns an (Optional) String
         for line in lines.flatten() {
-            let nums_str: Vec<&str> = pattern.split(&line).collect();
-            let mut nums: Vec<i32> = Vec::new();
-            for num_str in nums_str {
-                let num = num_str.parse::<i32>().unwrap_or(0);
-                nums.push(num);
-            }
+            let nums: Vec<i32> = pattern
+                .split(&line)
+                .filter_map(|s| s.parse().ok())
+                .collect();
+
             if (check_increasing(nums.clone()) || check_decreasing(nums.clone()))
                 && check_diff(nums.clone())
             {
                 counter += 1;
             }
+
+            if check_part2(nums.clone()) {
+                part2_count += 1;
+            }
         }
     }
     println!("{}", counter);
+    println!("{}", part2_count);
+}
+
+fn check_part2(vec: Vec<i32>) -> bool {
+    let mut result: Vec<Vec<i32>> = Vec::new();
+
+    // For each index, create a new vector without that element
+    for i in 0..vec.len() {
+        let sub_vec: Vec<i32> = vec
+            .iter()
+            .enumerate()
+            .filter(|&(idx, _)| idx != i)
+            .map(|(_, &val)| val)
+            .collect();
+
+        result.push(sub_vec);
+    }
+
+    for res in result {
+        if (check_increasing(res.clone()) || check_decreasing(res.clone()))
+            && check_diff(res.clone())
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 fn check_diff(vec: Vec<i32>) -> bool {
